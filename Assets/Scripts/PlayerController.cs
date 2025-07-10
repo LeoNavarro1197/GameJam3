@@ -70,10 +70,11 @@ public class PlayerController : MonoBehaviour
             rollForwardTimer = rollForwardDuration;
         }
 
-        if (Input.GetMouseButtonDown(0) && !isShooting)
-        {
-            StartCoroutine(ShootAfterDelay());
-        }
+        if (Input.GetKeyDown(KeyCode.Return) && !isShooting)
+            {
+                StartCoroutine(ShootAfterDelay());
+            }
+
 
         if (shootTimer > 0)
         {
