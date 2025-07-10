@@ -15195,6 +15195,8 @@ MonoBehaviour:
   distanciaCorrer: 10
   distanciaAtaque: 2
   radioLlegada: 0.5
+  esperando: 0
+  indiceDestino: 0
 --- !u!195 &376690388
 NavMeshAgent:
   m_ObjectHideFlags: 0
