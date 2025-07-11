@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
         right = mainCamera.transform.right;
         right.y = 0;
         right = Vector3.Normalize(right);
+
+        Camera.main.backgroundColor = Color.black;
     }
 
     void Update()
