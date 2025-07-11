@@ -9,6 +9,11 @@ public class PressEnter : MonoBehaviour
     public float velocidadParpadeo = 0.5f;
     private float temporizador;
 
+    private void Start()
+    {
+        Camera.main.backgroundColor = Color.black;
+    }
+
     void Update()
     {
         // Parpadeo
@@ -22,7 +27,7 @@ public class PressEnter : MonoBehaviour
         // Cambio de escena con Enter
         if (Input.GetKeyDown(KeyCode.Return))  // También puedes usar KeyCode.KeypadEnter si prefieres
         {
-            SceneManager.LoadScene("Menu-Principal");
+            SceneManager.LoadScene("PrincipleScene");
         }
     }
     }
