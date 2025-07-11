@@ -56734,6 +56734,9 @@ GameObject:
   - component: {fileID: 1300280333}
   - component: {fileID: 1300280335}
   - component: {fileID: 1300280334}
+  - component: {fileID: 1300280338}
+  - component: {fileID: 1300280337}
+  - component: {fileID: 1300280336}
   m_Layer: 0
   m_Name: CollidersEntradaDungeon
   m_TagString: Untagged
@@ -56798,6 +56801,69 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 19.402773, z: 68.52009}
   m_Center: {x: 0, y: -8.831893, z: -33.760044}
+--- !u!65 &1300280336
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300280332}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 39.008614, y: 18.589664, z: 76.46062}
+  m_Center: {x: 19.004307, y: -8.794832, z: -102.37571}
+--- !u!65 &1300280337
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300280332}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 21.644485, y: 17.576412, z: 22.965378}
+  m_Center: {x: 10.322243, y: -8.288206, z: -55.408714}
+--- !u!65 &1300280338
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300280332}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 15.436985, y: 8.744244, z: 37.35362}
+  m_Center: {x: 8.693586, y: -3.8721218, z: -25.75213}
 --- !u!1001 &1300284937
 PrefabInstance:
   m_ObjectHideFlags: 0
