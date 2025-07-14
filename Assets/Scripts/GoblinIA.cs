@@ -12,18 +12,18 @@ public class GoblinIA : MonoBehaviour
 
     private NavMeshAgent agente;
     private Animator animator;
-    public int indiceDestino = 0;
+    private int indiceDestino = 0;
     private bool persiguiendoJugador = false;
     private Transform jugador;
     private Coroutine esperaCoroutine;
     private Transform objetivoActual;
+    private bool atacando = false;
 
     void Start()
     {
         agente = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
-        // Busca al jugador por tag
         GameObject jugadorGO = GameObject.FindGameObjectWithTag("Player");
         if (jugadorGO != null) jugador = jugadorGO.transform;
         else Debug.LogError("No se encontró ningún objeto con el tag 'Player'.");
@@ -34,9 +34,8 @@ public class GoblinIA : MonoBehaviour
         }
         else
         {
-            ComenzarPatrullaje(); // Comenzar patrullaje
+            ComenzarPatrullaje();
         }
-
     }
 
     void Update()
@@ -44,36 +43,38 @@ public class GoblinIA : MonoBehaviour
         if (jugador != null)
         {
             float distanciaJugador = Vector3.Distance(transform.position, jugador.position);
-            // Cancelar espera si está patrullando
-            if (distanciaJugador > distanciaCorrer)
-            {
-                return;
-            }
-            if (!persiguiendoJugador && distanciaJugador <= distanciaCorrer)
-            {
-                if (esperaCoroutine != null)
-                {
-                    StopCoroutine(esperaCoroutine);
-                    esperaCoroutine = null;
-                }
-                agente.isStopped = false;
-            }
 
-            // Iniciar persecución
-            persiguiendoJugador = true;
-            PerseguirJugador(distanciaJugador);
+            if (distanciaJugador <= distanciaCorrer)
+            {
+                if (!persiguiendoJugador)
+                {
+                    if (esperaCoroutine != null)
+                    {
+                        StopCoroutine(esperaCoroutine);
+                        esperaCoroutine = null;
+                    }
+                    agente.isStopped = false;
+                    persiguiendoJugador = true;
+                }
+
+                PerseguirJugador(distanciaJugador);
+            }
+            else
+            {
+                if (persiguiendoJugador)
+                {
+                    persiguiendoJugador = false;
+                    agente.isStopped = false;
+                    objetivoActual = puntosPatrulla[indiceDestino];
+                    ComenzarPatrullaje();
+                }
+
+                Patrullar();
+            }
         }
         else
         {
-            // El jugador se alejó
-            if (persiguiendoJugador)
-            {
-                persiguiendoJugador = false;
-                agente.isStopped = false;
-                IrAlSiguientePunto(); // Reanuda patrulla
-            }
-
-            Patrullar(); // Verifica si llegó a un punto
+            Patrullar();
         }
 
         ActualizarAnimaciones();
@@ -89,18 +90,31 @@ public class GoblinIA : MonoBehaviour
         {
             agente.speed = 4.5f;
             SetAnimacion(true, false, false); // Correr
+            atacando = false;
         }
         else
         {
-            agente.speed = 2f;
-            SetAnimacion(false, true, false); // Atacar
+            agente.speed = 0f;
+
+            if (!atacando)
+            {
+                StartCoroutine(RealizarAtaque());
+            }
         }
     }
 
-    [NaughtyAttributes.Button]
- void Pruebame()
+    IEnumerator RealizarAtaque()
     {
-        print("Ya me canse");
+        atacando = true;
+        agente.isStopped = true;
+        SetAnimacion(false, true, false); // Atacar
+
+        // Espera el tiempo exacto de la animación de ataque (ajusta si es necesario)
+        yield return new WaitForSeconds(1.2f);
+
+        SetAnimacion(false, false, false); // Volver a idle
+        agente.isStopped = false;
+        atacando = false;
     }
 
     void Patrullar()
@@ -109,14 +123,14 @@ public class GoblinIA : MonoBehaviour
 
         Vector3 destinoActual = puntosPatrulla[indiceDestino].position;
         float distancia = Vector3.Distance(transform.position, destinoActual);
-        
+
         if (distancia <= radioLlegada && !esperando)
         {
             if (esperaCoroutine == null)
             {
                 esperando = true;
                 agente.velocity = Vector3.zero;
-                esperaCoroutine = StartCoroutine(EsperarEnPunto(2f)); // Idle 2 segundos
+                esperaCoroutine = StartCoroutine(EsperarEnPunto(2f));
             }
         }
     }
@@ -145,6 +159,7 @@ public class GoblinIA : MonoBehaviour
         agente.speed = 2f;
         SetAnimacion(false, false, true); // Caminar
     }
+
     void IrAlSiguientePunto()
     {
         if (puntosPatrulla.Length == 0) return;
@@ -165,7 +180,7 @@ public class GoblinIA : MonoBehaviour
             if (esperaCoroutine != null)
                 estaMoviendose = false;
 
-            animator.SetBool("isWalking", estaMoviendose);
+            SetAnimacion(false, false, estaMoviendose); // Caminar si se está moviendo
         }
     }
 
@@ -203,3 +218,5 @@ public class GoblinIA : MonoBehaviour
         }
     }
 }
+
+
