@@ -19,16 +19,15 @@ public class PowerUpSpawner : MonoBehaviour
         InvokeRepeating(nameof(SpawnPowerUp), spawnInterval, spawnInterval);
     }
 
-    private void SpawnPowerUp()
-    {
-        Vector3 spawnPosition = new Vector3(
-            Random.Range(minX, maxX),
-            0.5f,
-            Random.Range(minZ, maxZ)
-        );
+  private void SpawnPowerUp()
+{
+    Vector3 spawnPosition = new Vector3(
+        Random.Range(minX, maxX),
+        -4,
+        Random.Range(minZ, maxZ)
+    );
 
-        GameObject spawned = Instantiate(powerUpPrefab, spawnPosition, Quaternion.identity);
+    Instantiate(powerUpPrefab, spawnPosition, powerUpPrefab.transform.rotation);
+}
 
-        spawned.transform.position = new Vector3(spawnPosition.x, 0.5f, spawnPosition.z);
-    }
 }

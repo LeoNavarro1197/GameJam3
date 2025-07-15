@@ -3,7 +3,7 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     [SerializeField] private string powerUpName = "Disparo doble";
-    [SerializeField] private float lifetime = 7f;
+    [SerializeField] private float lifetime = 20f;
 
     private void Start()
     {
@@ -12,14 +12,16 @@ public class PowerUp : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
+{
+    if (other.CompareTag("Player"))
     {
-        if (other.CompareTag("Player"))
-        {
-            CancelInvoke(nameof(SelfDestruct));
-            TooltipUI.Instance.ShowTemporarily(powerUpName, 10f); 
-            Destroy(gameObject);
-        }
+        CancelInvoke(nameof(SelfDestruct));
+        //TooltipUI.Instance.ShowTemporarily("¡Disparo doble activado!", 3f);
+        Destroy(gameObject);
+        Debug.Log("Se cogió el power Up");
     }
+}
+
 
     private void SelfDestruct()
     {
