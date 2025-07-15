@@ -548,7 +548,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: -2.08
+  near clip plane: -6.85
   far clip plane: 1000.29
   field of view: 60
   orthographic: 1
@@ -1073,6 +1073,56 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 95082879787689830, guid: e3d9a5b7a19f9684d9b63308cdfa95bd, type: 3}
   m_PrefabInstance: {fileID: 2057829404}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1656704284
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1656704286}
+  - component: {fileID: 1656704285}
+  m_Layer: 0
+  m_Name: PowerUpSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1656704285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656704284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cda68d0e73731cb4a862c58853bd6e81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  powerUpPrefab: {fileID: 100006, guid: 3ac3af0756bb3654690122060f9cef08, type: 3}
+  spawnInterval: 20
+  minX: -10
+  maxX: 10
+  minZ: -10
+  maxZ: 10
+--- !u!4 &1656704286
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656704284}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.85594, y: 2.7167587, z: -7.0400815}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1982860982
 GameObject:
   m_ObjectHideFlags: 0
@@ -1281,3 +1331,4 @@ SceneRoots:
   - {fileID: 1455663344}
   - {fileID: 149000800}
   - {fileID: 1559170674}
+  - {fileID: 1656704286}
