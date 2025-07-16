@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public float rotationSpeed = 10f;
     public float rollForwardSpeed = 5f;
     public float rollForwardDuration = 1f;
-    public float shootAnimationDuration = 1f;  
+    public float shootAnimationDuration = 1f;
 
     private float rollForwardTimer = 0f;
     private float shootTimer = 0f;
@@ -35,13 +35,16 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        animator.SetBool("is_shot", true);
+
+        // === Rodar hacia adelante ===
         if (rollForwardTimer > 0)
         {
             rollForwardTimer -= Time.deltaTime;
             transform.position += transform.forward * rollForwardSpeed * Time.deltaTime;
 
             animator.SetBool("is_rollforward", true);
-            animator.SetBool("is_runing", false);
+            ResetMovementAnimations();
             return;
         }
         else
@@ -49,7 +52,7 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("is_rollforward", false);
         }
 
-        // Movimiento normal
+        // === Movimiento ===
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
@@ -58,25 +61,50 @@ public class PlayerController : MonoBehaviour
         if (direction.magnitude > 0.1f)
         {
             transform.position += direction * moveSpeed * Time.deltaTime;
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            animator.SetBool("is_runing", true);
+
+            float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+
+            ResetMovementAnimations();
+
+            if (angle >= -45f && angle < 45f)
+                animator.SetBool("is_runing", true);             // Adelante
+            else if (angle >= 45f && angle < 135f)
+                animator.SetBool("is_straferight", true);        // Derecha
+            else if (angle <= -45f && angle > -135f)
+                animator.SetBool("is_strafeleft", true);         // Izquierda
+            else
+                animator.SetBool("is_runingback", true);         // Atrás
         }
         else
         {
-            animator.SetBool("is_runing", false);
+            ResetMovementAnimations();
         }
 
+        // === Rodar con espacio ===
         if (Input.GetKeyDown(KeyCode.Space))
         {
             rollForwardTimer = rollForwardDuration;
         }
 
-        if (Input.GetKeyDown(KeyCode.Return) && !isShooting)
+        // === Rotar hacia el mouse ===
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            Vector3 lookDirection = hit.point - transform.position;
+            lookDirection.y = 0;
+            if (lookDirection != Vector3.zero)
             {
-                StartCoroutine(ShootAfterDelay());
+                Quaternion targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), rotationSpeed * Time.deltaTime);
+                transform.rotation = targetRotation;
             }
+        }
 
+        // === Disparo con clic izquierdo ===
+        if (Input.GetMouseButtonDown(0) && !isShooting)
+        {
+            StartCoroutine(ShootAfterDelay());
+        }
 
         if (shootTimer > 0)
         {
@@ -84,7 +112,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            animator.SetBool("is_shot", false);
+            //animator.SetBool("is_shot", false);
         }
     }
 
@@ -96,8 +124,49 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSeconds(shootAnimationDuration);
 
-        Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        // Plano horizontal a la altura del firePoint
+        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, firePoint.position.y, 0));
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        Vector3 targetDirection = transform.forward;
+
+        if (groundPlane.Raycast(ray, out float enter))
+        {
+            Vector3 hitPoint = ray.GetPoint(enter);
+            targetDirection = hitPoint - firePoint.position;
+            targetDirection.y = 0;
+            targetDirection.Normalize();
+        }
+
+        // Rotación para que el proyectil apunte al target horizontalmente
+        Quaternion projectileRotation = Quaternion.LookRotation(targetDirection);
+
+        // Instanciamos el proyectil con rotación calculada
+        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, projectileRotation);
+
+        // Inicializamos la dirección en el script Projectile (que debe tener el método Initialize)
+        Projectile projScript = projectile.GetComponent<Projectile>();
+        if (projScript != null)
+        {
+            projScript.Initialize(targetDirection);
+        }
+
+        // Aplicar rotación local para corregir modelo visual (hijo llamado "Visual")
+        Transform visual = projectile.transform.Find("Visual");
+        if (visual != null)
+        {
+            visual.localRotation = Quaternion.Euler(-90f, 0f, 0f);
+        }
 
         isShooting = false;
     }
+
+    private void ResetMovementAnimations()
+    {
+        animator.SetBool("is_runing", false);
+        animator.SetBool("is_runingback", false);
+        animator.SetBool("is_strafeleft", false);
+        animator.SetBool("is_straferight", false);
+    }
 }
+
