@@ -59,7 +59,7 @@ public class GoblinDirecto : MonoBehaviour
         animator.SetBool("isDead", true);
         waveSpawner.OnEnemyKilled();
         navMeshAgent.speed = 0;
-        Invoke("CallDie", 3);
+        Invoke("CallDie", 6);
     }
 
     void CallDie()
