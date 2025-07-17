@@ -4,6 +4,8 @@ public class PlayerController : MonoBehaviour
 {
     public GameObject projectilePrefab;
     public Transform firePoint;
+    public RevolverScriptUI revolverScriptUI;
+    GameManagerScript gameManagerScript;
 
     public float moveSpeed = 5f;
     public float rotationSpeed = 10f;
@@ -15,6 +17,8 @@ public class PlayerController : MonoBehaviour
     private float shootTimer = 0f;
     private bool isShooting = false;
 
+    public bool isDead = true;
+
     private Vector3 forward, right;
 
     public Camera mainCamera;
@@ -22,6 +26,9 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        revolverScriptUI = GameObject.FindAnyObjectByType<RevolverScriptUI>();
+        gameManagerScript = GameObject.FindAnyObjectByType<GameManagerScript>();
+
         forward = mainCamera.transform.forward;
         forward.y = 0;
         forward = Vector3.Normalize(forward);
@@ -37,83 +44,92 @@ public class PlayerController : MonoBehaviour
     {
         animator.SetBool("is_shot", true);
 
-        // === Rodar hacia adelante ===
-        if (rollForwardTimer > 0)
+        if (isDead)
         {
-            rollForwardTimer -= Time.deltaTime;
-            transform.position += transform.forward * rollForwardSpeed * Time.deltaTime;
-
-            animator.SetBool("is_rollforward", true);
-            ResetMovementAnimations();
-            return;
-        }
-        else
-        {
-            animator.SetBool("is_rollforward", false);
-        }
-
-        // === Movimiento ===
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        Vector3 direction = horizontalInput * right + verticalInput * forward;
-
-        if (direction.magnitude > 0.1f)
-        {
-            transform.position += direction * moveSpeed * Time.deltaTime;
-
-            float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
-
-            ResetMovementAnimations();
-
-            if (angle >= -45f && angle < 45f)
-                animator.SetBool("is_runing", true);             // Adelante
-            else if (angle >= 45f && angle < 135f)
-                animator.SetBool("is_straferight", true);        // Derecha
-            else if (angle <= -45f && angle > -135f)
-                animator.SetBool("is_strafeleft", true);         // Izquierda
-            else
-                animator.SetBool("is_runingback", true);         // Atrás
-        }
-        else
-        {
-            ResetMovementAnimations();
-        }
-
-        // === Rodar con espacio ===
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            rollForwardTimer = rollForwardDuration;
-        }
-
-        // === Rotar hacia el mouse ===
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
-        {
-            Vector3 lookDirection = hit.point - transform.position;
-            lookDirection.y = 0;
-            if (lookDirection != Vector3.zero)
+            // === Rodar hacia adelante ===
+            /*if (rollForwardTimer > 0)
             {
-                Quaternion targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), rotationSpeed * Time.deltaTime);
-                transform.rotation = targetRotation;
+                rollForwardTimer -= Time.deltaTime;
+                transform.position += transform.forward * rollForwardSpeed * Time.deltaTime;
+
+                animator.SetBool("is_rollforward", true);
+                ResetMovementAnimations();
+                return;
+            }
+            else
+            {
+                animator.SetBool("is_rollforward", false);
+            }*/
+
+            // === Movimiento ===
+            float horizontalInput = Input.GetAxis("Horizontal");
+            float verticalInput = Input.GetAxis("Vertical");
+
+            Vector3 direction = horizontalInput * right + verticalInput * forward;
+
+            if (direction.magnitude > 0.1f)
+            {
+                transform.position += direction * moveSpeed * Time.deltaTime;
+
+                float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+
+                ResetMovementAnimations();
+
+                if (angle >= -45f && angle < 45f)
+                    animator.SetBool("is_runing", true);             // Adelante
+                else if (angle >= 45f && angle < 135f)
+                    animator.SetBool("is_straferight", true);        // Derecha
+                else if (angle <= -45f && angle > -135f)
+                    animator.SetBool("is_strafeleft", true);         // Izquierda
+                else
+                    animator.SetBool("is_runingback", true);         // Atrás
+            }
+            else
+            {
+                ResetMovementAnimations();
+            }
+
+            // === Rodar con espacio ===
+            /*if (Input.GetKeyDown(KeyCode.Space))
+            {
+                rollForwardTimer = rollForwardDuration;
+            }*/
+
+            // === Rotar hacia el mouse ===
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                Vector3 lookDirection = hit.point - transform.position;
+                lookDirection.y = 0;
+                if (lookDirection != Vector3.zero)
+                {
+                    Quaternion targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), rotationSpeed * Time.deltaTime);
+                    transform.rotation = targetRotation;
+                }
+            }
+
+            // === Disparo con clic izquierdo ===
+            if (Input.GetMouseButtonDown(0) && !isShooting)
+            {
+                if (revolverScriptUI.frameIndex < 13)
+                {
+                    StartCoroutine(ShootAfterDelay());
+                }
+
+            }
+
+            if (shootTimer > 0)
+            {
+                shootTimer -= Time.deltaTime;
+            }
+            else
+            {
+                //animator.SetBool("is_shot", false);
             }
         }
 
-        // === Disparo con clic izquierdo ===
-        if (Input.GetMouseButtonDown(0) && !isShooting)
-        {
-            StartCoroutine(ShootAfterDelay());
-        }
-
-        if (shootTimer > 0)
-        {
-            shootTimer -= Time.deltaTime;
-        }
-        else
-        {
-            //animator.SetBool("is_shot", false);
-        }
+        
     }
 
     private System.Collections.IEnumerator ShootAfterDelay()
@@ -159,6 +175,18 @@ public class PlayerController : MonoBehaviour
         }
 
         isShooting = false;
+    }
+
+    public void Die()
+    {
+        animator.SetBool("is_dead", true);
+        isDead = false;
+        Invoke("GameOver", 2);
+    }
+
+    void GameOver()
+    {
+        gameManagerScript.TriggerGameOver();
     }
 
     private void ResetMovementAnimations()

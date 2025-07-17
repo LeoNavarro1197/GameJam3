@@ -584,6 +584,7 @@ GameObject:
   - component: {fileID: 4773364644197979477}
   - component: {fileID: -3372706447291417105}
   - component: {fileID: 7442101754110836532}
+  - component: {fileID: 8613816628275927954}
   m_Layer: 0
   m_Name: Goblin
   m_TagString: Enemy
@@ -639,7 +640,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.23
-  m_Speed: 3.5
+  m_Speed: 6
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -715,6 +716,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 1
   waveSpawner: {fileID: 0}
+--- !u!114 &8613816628275927954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983613421437130090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a111f20b9f942a49a1b2e68b08965c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killRange: 1
+  detectionRange: 3
+  attackAnimationDuration: 0.15
+  isDeadPlayer: 0
 --- !u!1 &2221275689758969056
 GameObject:
   m_ObjectHideFlags: 0

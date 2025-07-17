@@ -8,7 +8,7 @@ public class GameManagerScript : MonoBehaviour
 {
     public GameObject pausePanel;
     public GameObject gameOverPanel;
-    public TextMeshPro scoreText;
+    public TextMeshProUGUI scoreText;
     private int score = 0;
     public AmmoRaycastScript raycastScript;
     private bool isPaused = false;
@@ -43,7 +43,7 @@ public class GameManagerScript : MonoBehaviour
     public void OnRestartClicked()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("PrincipleScene");
     }
 
     public void OnBackToMenuClicked()
@@ -56,16 +56,17 @@ public class GameManagerScript : MonoBehaviour
     public void TriggerGameOver()
     {
         gameOverPanel.SetActive(true);
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
 
         // Mostrar puntuación acumulada (simulada o recibida de otro script)
-        scoreText.text = "Puntuación: " + score.ToString();
+        scoreText.text = "Score: " + score.ToString();
     }
 
     // Método público que otros scripts pueden usar para sumar puntos
     public void AddScore(int amount)
     {
         score += amount;
+        scoreText.text = "Score: " + score.ToString();
     }
 }
 

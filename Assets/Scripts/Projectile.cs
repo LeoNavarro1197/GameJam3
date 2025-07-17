@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    private GameManagerScript gameManagerScript;
+
     public float speed = 20f;
     public float maxDistance = 50f;
 
@@ -17,6 +19,7 @@ public class Projectile : MonoBehaviour
     void Start()
     {
         startPosition = transform.position;
+        gameManagerScript = GameObject.FindAnyObjectByType<GameManagerScript>();
     }
 
     void Update()
@@ -33,6 +36,7 @@ public class Projectile : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
+            gameManagerScript.AddScore(1);
             Destroy(gameObject);
         }
     }

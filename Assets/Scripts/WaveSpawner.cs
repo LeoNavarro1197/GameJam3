@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;  // Para el texto de feedback
 
 public class WaveSpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
-    public Transform[] spawnPoints;  // Tus spawns definidos en escena
+    public Transform[] spawnPoints;  //spawns definidos en escena
     public int startingEnemies = 5;   // Enemigos en oleada 1
     public int enemiesIncreasePerWave = 2;  // Incremento enemigos por oleada
     public int maxEnemiesOnScreen = 20;
@@ -37,25 +36,22 @@ public class WaveSpawner : MonoBehaviour
     {
         while (true)
         {
-            // 1. Subir oleada
             currentWave++;
             enemiesToSpawn = Mathf.Min(startingEnemies + enemiesIncreasePerWave * (currentWave - 1), maxEnemiesOnScreen);
             Debug.Log($"Oleada {currentWave} - Enemigos a generar: {enemiesToSpawn}");
 
-            // 2. Mostrar mensaje (opcional)
+            //Mostrar mensaje
             ShowWaveMessage($"Oleada {currentWave}");
 
-            // 3. Espera antes de iniciar
             yield return new WaitForSecondsRealtime(timeBetweenWaves);
 
-            // 4. Iniciar spawn
             spawning = true;
             StartCoroutine(SpawnEnemies());
 
-            // 5. Esperar hasta que TODOS estén muertos y ya no esté spawneando
+            //Esperar hasta que TODOS estén muertos y ya no esté spawneando
             while (enemiesAlive > 0 || spawning)
             {
-                Debug.Log($"Esperando... Enemigos vivos: {enemiesAlive}, spawning: {spawning}");
+                //Debug.Log($"Esperando... Enemigos vivos: {enemiesAlive}, spawning: {spawning}");
                 yield return null;
             }
 

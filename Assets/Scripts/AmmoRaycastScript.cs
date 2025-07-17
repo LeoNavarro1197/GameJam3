@@ -5,8 +5,14 @@ public class AmmoRaycastScript : MonoBehaviour
 {
     public RevolverScriptUI ammoUI; // Referencia al script que controla la animación
     public GameManagerScript gameManagerScript; // Referencia al controlador de estados
+    public PlayerController playerController;
 
     private bool inputEnabled = true;
+
+    private void Start()
+    {
+        playerController = GameObject.FindAnyObjectByType<PlayerController>();
+    }
 
     public void EnableInputAfterDelay(float delay)
     {
@@ -24,7 +30,11 @@ public class AmmoRaycastScript : MonoBehaviour
     {
         if (inputEnabled && Input.GetMouseButtonDown(0) && !gameManagerScript.IsPaused())
         {
-            ammoUI.OnClickAdvanceAmmo();
+            if (playerController.isDead)
+            {
+                ammoUI.OnClickAdvanceAmmo();
+            }
+            
         }
     }
 }

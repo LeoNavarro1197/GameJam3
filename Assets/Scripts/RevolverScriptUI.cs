@@ -8,15 +8,16 @@ public class RevolverScriptUI : MonoBehaviour
     public RawImage ammoImage;
     public Text reloadingText;
 
-    private int frameIndex = 0;
+    public int frameIndex = 0;
     private bool isAnimating = false;
+
+    public bool isEmptyGun = true;
 
     void Start()
     {
-        // Inicializa estado
         frameIndex = 0;
         ammoImage.texture = ammoFrames[frameIndex];
-        reloadingText.text = ""; // Oculta el texto de recarga
+        reloadingText.text = "";
     }
 
     public void OnClickAdvanceAmmo()
@@ -24,10 +25,12 @@ public class RevolverScriptUI : MonoBehaviour
         if (frameIndex + 3 <= ammoFrames.Length)
         {
             StartCoroutine(PlayDisparo());
+
         }
         else if (!isAnimating)
         {
-            reloadingText.text = "Reloading";
+            isEmptyGun = false;
+            reloadingText.text = "Recargando...";
             Invoke("ResetAmmoUI", 2f);
         }
     }
@@ -48,6 +51,7 @@ public class RevolverScriptUI : MonoBehaviour
 
     public void ResetAmmoUI()
     {
+        isEmptyGun = true;
         frameIndex = 0;
         ammoImage.texture = ammoFrames[frameIndex];
         reloadingText.text = "";
