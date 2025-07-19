@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class AmmoRaycastScript : MonoBehaviour
+public class AmmoRaycastGun2 : MonoBehaviour
 {
     public RevolverScriptUI ammoUI; // Referencia al script que controla la animación
     public GameManagerScript gameManagerScript; // Referencia al controlador de estados
@@ -30,7 +30,7 @@ public class AmmoRaycastScript : MonoBehaviour
     {
         if (playerController.isDead)
         {
-            if (inputEnabled && Input.GetMouseButtonDown(0) && !gameManagerScript.IsPaused())
+            if (inputEnabled && Input.GetMouseButtonDown(1) && !gameManagerScript.IsPaused())
             {
                 ammoUI.OnClickAdvanceAmmo();
             }
