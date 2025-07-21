@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameObject projectilePrefab;
-    public Transform firePoint;
+    public GameObject projectilePrefab, particleFireGun, particleFireGun2, gun2, bloodParticle;
+    public GameObject UIGun2;
+    public Transform firePoint, firePointGun2;
     public RevolverScriptUI revolverScriptUI;
+    public RevolverScriptUIGun2 revolverScriptUIGun2;
     GameManagerScript gameManagerScript;
 
     public float moveSpeed = 5f;
@@ -15,9 +17,10 @@ public class PlayerController : MonoBehaviour
 
     private float rollForwardTimer = 0f;
     private float shootTimer = 0f;
-    private bool isShooting = false;
+    private bool isShooting = false, isShooting2 = false;
 
     public bool isDead = true;
+    bool isActiveGun2 = false;
 
     private Vector3 forward, right;
 
@@ -27,6 +30,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         revolverScriptUI = GameObject.FindAnyObjectByType<RevolverScriptUI>();
+        revolverScriptUIGun2 = GameObject.FindAnyObjectByType<RevolverScriptUIGun2>();
         gameManagerScript = GameObject.FindAnyObjectByType<GameManagerScript>();
 
         forward = mainCamera.transform.forward;
@@ -76,13 +80,13 @@ public class PlayerController : MonoBehaviour
                 ResetMovementAnimations();
 
                 if (angle >= -45f && angle < 45f)
-                    animator.SetBool("is_runing", true);             // Adelante
+                    animator.SetBool("is_runing", true);
                 else if (angle >= 45f && angle < 135f)
-                    animator.SetBool("is_straferight", true);        // Derecha
+                    animator.SetBool("is_straferight", true);
                 else if (angle <= -45f && angle > -135f)
-                    animator.SetBool("is_strafeleft", true);         // Izquierda
+                    animator.SetBool("is_strafeleft", true);
                 else
-                    animator.SetBool("is_runingback", true);         // Atrás
+                    animator.SetBool("is_runingback", true);
             }
             else
             {
@@ -109,14 +113,29 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            // === Disparo con clic izquierdo ===
             if (Input.GetMouseButtonDown(0) && !isShooting)
             {
                 if (revolverScriptUI.frameIndex < 13)
                 {
                     StartCoroutine(ShootAfterDelay());
+                    particleFireGun.SetActive(true);
+                    Invoke("FireGunParticle1", .1f);
                 }
 
+            }
+
+            if (isActiveGun2)
+            {
+                if (Input.GetMouseButtonDown(1) && !isShooting2)
+                {
+                    if (revolverScriptUIGun2.frameIndex < 13)
+                    {
+                        StartCoroutine(ShootAfterDelayGun2());
+                        particleFireGun2.SetActive(true);
+                        Invoke("FireGunParticle2", .1f);
+                    }
+
+                }
             }
 
             if (shootTimer > 0)
@@ -130,6 +149,27 @@ public class PlayerController : MonoBehaviour
         }
 
         
+    }
+
+    void FireGunParticle1() { particleFireGun.SetActive(false); }
+    void FireGunParticle2() { particleFireGun2.SetActive(false); }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "PowerUpGun2")
+        {
+            isActiveGun2 = true;
+            gun2.SetActive(true);
+            UIGun2.SetActive(true);
+        }        
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            bloodParticle.SetActive(true);
+        }
     }
 
     private System.Collections.IEnumerator ShootAfterDelay()
@@ -175,6 +215,51 @@ public class PlayerController : MonoBehaviour
         }
 
         isShooting = false;
+    }
+
+    private System.Collections.IEnumerator ShootAfterDelayGun2()
+    {
+        isShooting2 = true;
+        animator.SetBool("is_shot", true);
+        shootTimer = shootAnimationDuration;
+
+        yield return new WaitForSeconds(shootAnimationDuration);
+
+        // Plano horizontal a la altura del firePoint
+        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, firePointGun2.position.y, 0));
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        Vector3 targetDirection = transform.forward;
+
+        if (groundPlane.Raycast(ray, out float enter))
+        {
+            Vector3 hitPoint = ray.GetPoint(enter);
+            targetDirection = hitPoint - firePointGun2.position;
+            targetDirection.y = 0;
+            targetDirection.Normalize();
+        }
+
+        // Rotación para que el proyectil apunte al target horizontalmente
+        Quaternion projectileRotation = Quaternion.LookRotation(targetDirection);
+
+        // Instanciamos el proyectil con rotación calculada
+        GameObject projectile = Instantiate(projectilePrefab, firePointGun2.position, projectileRotation);
+
+        // Inicializamos la dirección en el script Projectile (que debe tener el método Initialize)
+        Projectile projScript = projectile.GetComponent<Projectile>();
+        if (projScript != null)
+        {
+            projScript.Initialize(targetDirection);
+        }
+
+        // Aplicar rotación local para corregir modelo visual (hijo llamado "Visual")
+        Transform visual = projectile.transform.Find("Visual");
+        if (visual != null)
+        {
+            visual.localRotation = Quaternion.Euler(-90f, 0f, 0f);
+        }
+
+        isShooting2 = false;
     }
 
     public void Die()

@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class AmmoRaycastGun2 : MonoBehaviour
 {
-    public RevolverScriptUI ammoUI; // Referencia al script que controla la animación
-    public GameManagerScript gameManagerScript; // Referencia al controlador de estados
+    public RevolverScriptUIGun2 ammoUI; // Referencia al script que controla la animación
+    public GameManagerScriptGun2 gameManagerScript; // Referencia al controlador de estados
     public PlayerController playerController;
 
     private bool inputEnabled = true;

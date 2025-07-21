@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Proyectil
   - Enemy
+  - PowerUpGun2
   layers:
   - Default
   - TransparentFX

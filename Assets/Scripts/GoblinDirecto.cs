@@ -9,6 +9,7 @@ public class GoblinDirecto : MonoBehaviour
     private Animator animator;
     public WaveSpawner waveSpawner; 
     NavMeshAgent navMeshAgent;
+    public GameObject particulaSangre;
 
     void Start()
     {
@@ -65,12 +66,14 @@ public class GoblinDirecto : MonoBehaviour
     void CallDie()
     {
         Destroy(gameObject);
+        Destroy(particulaSangre);
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Proyectil")
         {
+            particulaSangre.SetActive(true);
             Die();
         }
     }
