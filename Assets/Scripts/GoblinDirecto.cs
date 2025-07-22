@@ -10,6 +10,8 @@ public class GoblinDirecto : MonoBehaviour
     public WaveSpawner waveSpawner; 
     NavMeshAgent navMeshAgent;
     public GameObject particulaSangre;
+    Collider collider;
+    AudioSource audioSource;
 
     void Start()
     {
@@ -17,6 +19,8 @@ public class GoblinDirecto : MonoBehaviour
         animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         waveSpawner = FindAnyObjectByType<WaveSpawner>();
+        collider = GetComponent<Collider>();
+        audioSource = GetComponent<AudioSource>();
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
@@ -74,6 +78,8 @@ public class GoblinDirecto : MonoBehaviour
         if (other.gameObject.tag == "Proyectil")
         {
             particulaSangre.SetActive(true);
+            collider.enabled = false;
+            audioSource.Play();
             Die();
         }
     }

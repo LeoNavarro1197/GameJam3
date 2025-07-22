@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,9 +10,11 @@ public class PlayerController : MonoBehaviour
     public GameObject gun2;
     public Transform firePointGun2;
     public GameObject particleFireGun2;
+    public GameObject panelGun2;
+    public GameObject itemGun2;
     public RevolverScriptUIGun2 revolverScriptUIGun2;
 
-    [Header("Resto del Plkayer")]
+    [Header("Resto del Player")]
     public Transform firePoint;
     public RevolverScriptUI revolverScriptUI;
     GameManagerScript gameManagerScript;
@@ -28,17 +31,29 @@ public class PlayerController : MonoBehaviour
 
     public bool isDead = true;
     bool isActiveGun2 = false;
+    public WaveSpawner waveSpawner;
+
+    AudioSource audioSource;
+    public AudioSource audioSourceFire;
+    public AudioSource audioSourceRecharger;
+    public AudioSource audioSourceRunning;
+    public AudioSource audioSourcePich;
 
     private Vector3 forward, right;
 
     public Camera mainCamera;
     public Animator animator;
 
+    public Rigidbody rb;
+    public float minVelocity = 0.1f;
+
     void Start()
     {
         revolverScriptUI = GameObject.FindAnyObjectByType<RevolverScriptUI>();
         revolverScriptUIGun2 = GameObject.FindAnyObjectByType<RevolverScriptUIGun2>();
         gameManagerScript = GameObject.FindAnyObjectByType<GameManagerScript>();
+        audioSource = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody>();
 
         forward = mainCamera.transform.forward;
         forward.y = 0;
@@ -72,78 +87,109 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("is_rollforward", false);
             }*/
 
-            // === Movimiento ===
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
-
-            Vector3 direction = horizontalInput * right + verticalInput * forward;
-
-            if (direction.magnitude > 0.1f)
+            if (waveSpawner.isItemView)
             {
-                transform.position += direction * moveSpeed * Time.deltaTime;
+                // === Movimiento ===
+                float horizontalInput = Input.GetAxis("Horizontal");
+                float verticalInput = Input.GetAxis("Vertical");
 
-                float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+                Vector3 direction = horizontalInput * right + verticalInput * forward;
 
-                ResetMovementAnimations();
+                float speed = direction.magnitude;
 
-                if (angle >= -45f && angle < 45f)
-                    animator.SetBool("is_runing", true);
-                else if (angle >= 45f && angle < 135f)
-                    animator.SetBool("is_straferight", true);
-                else if (angle <= -45f && angle > -135f)
-                    animator.SetBool("is_strafeleft", true);
+                if (speed > minVelocity && IsGrounded())
+                {
+                    if (!audioSourceRunning.isPlaying)
+                        audioSourceRunning.Play();
+                }
                 else
-                    animator.SetBool("is_runingback", true);
-            }
-            else
-            {
-                ResetMovementAnimations();
-            }
-
-            // === Rodar con espacio ===
-            /*if (Input.GetKeyDown(KeyCode.Space))
-            {
-                rollForwardTimer = rollForwardDuration;
-            }*/
-
-            // === Rotar hacia el mouse ===
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                Vector3 lookDirection = hit.point - transform.position;
-                lookDirection.y = 0;
-                if (lookDirection != Vector3.zero)
                 {
-                    Quaternion targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), rotationSpeed * Time.deltaTime);
-                    transform.rotation = targetRotation;
-                }
-            }
-
-            if (Input.GetMouseButtonDown(0) && !isShooting)
-            {
-                if (revolverScriptUI.frameIndex < 13)
-                {
-                    StartCoroutine(ShootAfterDelay());
-                    particleFireGun.SetActive(true);
-                    Invoke("FireGunParticle1", .1f);
+                    if (audioSourceRunning.isPlaying)
+                        audioSourceRunning.Pause();
                 }
 
-            }
-
-            if (isActiveGun2)
-            {
-                if (Input.GetMouseButtonDown(1) && !isShooting2)
+                if (direction.magnitude > 0.1f )
                 {
-                    if (revolverScriptUIGun2.frameIndex < 13)
+                    transform.position += direction * moveSpeed * Time.deltaTime;
+
+                    float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+
+                    ResetMovementAnimations();
+
+                    if (angle >= -45f && angle < 45f)
+                        animator.SetBool("is_runing", true);
+                    else if (angle >= 45f && angle < 135f)
+                        animator.SetBool("is_straferight", true);
+                    else if (angle <= -45f && angle > -135f)
+                        animator.SetBool("is_strafeleft", true);
+                    else
+                        animator.SetBool("is_runingback", true);
+                }
+                else
+                {
+                    ResetMovementAnimations();
+                }
+
+                // === Rodar con espacio ===
+                /*if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    rollForwardTimer = rollForwardDuration;
+                }*/
+
+                // === Rotar hacia el mouse ===
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    Vector3 lookDirection = hit.point - transform.position;
+                    lookDirection.y = 0;
+                    if (lookDirection != Vector3.zero)
                     {
-                        StartCoroutine(ShootAfterDelayGun2());
-                        particleFireGun2.SetActive(true);
-                        Invoke("FireGunParticle2", .1f);
+                        Quaternion targetRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), rotationSpeed * Time.deltaTime);
+                        transform.rotation = targetRotation;
+                    }
+                }
+            }
+
+            
+            if (waveSpawner.isItemView)
+            {
+                if (Input.GetMouseButtonDown(0) && !isShooting)
+                {
+                    if (revolverScriptUI.frameIndex < 13)
+                    {
+                        StartCoroutine(ShootAfterDelay());
+                        particleFireGun.SetActive(true);
+                        audioSourceFire.Play();
+                        Invoke("FireGunParticle1", .1f);
+                    }
+                    else
+                    {
+                        audioSourceRecharger.Play();
                     }
 
                 }
+
+                if (isActiveGun2)
+                {
+                    if (Input.GetMouseButtonDown(1) && !isShooting2)
+                    {
+                        if (revolverScriptUIGun2.frameIndex < 13)
+                        {
+                            StartCoroutine(ShootAfterDelayGun2());
+                            particleFireGun2.SetActive(true);
+                            audioSourceFire.Play();
+                            Invoke("FireGunParticle2", .1f);
+                        }
+                        else
+                        {
+                            audioSourceRecharger.Play();
+                        }
+
+                    }
+                }
             }
+
 
             if (shootTimer > 0)
             {
@@ -158,6 +204,11 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    private bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, 1.1f);
+    }
+
     void FireGunParticle1() { particleFireGun.SetActive(false); }
     void FireGunParticle2() { particleFireGun2.SetActive(false); }
 
@@ -168,6 +219,10 @@ public class PlayerController : MonoBehaviour
             isActiveGun2 = true;
             gun2.SetActive(true);
             UIGun2.SetActive(true);
+            panelGun2.SetActive(true);
+            itemGun2.SetActive(false);
+            audioSourceRunning.Pause();
+            audioSourcePich.pitch = 0.3f;
         }        
     }
 
@@ -175,7 +230,9 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
+            audioSource.Play();
             bloodParticle.SetActive(true);
+            audioSourceRunning.Pause();
         }
     }
 

@@ -19,6 +19,8 @@ public class WaveSpawner : MonoBehaviour
     private bool spawning = false;
     private Coroutine messageCoroutine; // Referencia específica para el mensaje
 
+    public bool isItemView = true;
+
     void Start()
     {
         StartCoroutine(ManageWaves());

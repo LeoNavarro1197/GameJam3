@@ -6,6 +6,7 @@ public class AmmoRaycastScript : MonoBehaviour
     public RevolverScriptUI ammoUI; // Referencia al script que controla la animación
     public GameManagerScript gameManagerScript; // Referencia al controlador de estados
     public PlayerController playerController;
+    public WaveSpawner waveSpawner;
 
     private bool inputEnabled = true;
 
@@ -28,11 +29,14 @@ public class AmmoRaycastScript : MonoBehaviour
 
     void Update()
     {
-        if (playerController.isDead)
+        if (waveSpawner.isItemView)
         {
-            if (inputEnabled && Input.GetMouseButtonDown(0) && !gameManagerScript.IsPaused())
+            if (playerController.isDead)
             {
-                ammoUI.OnClickAdvanceAmmo();
+                if (inputEnabled && Input.GetMouseButtonDown(0) && !gameManagerScript.IsPaused())
+                {
+                    ammoUI.OnClickAdvanceAmmo();
+                }
             }
         }
     }
