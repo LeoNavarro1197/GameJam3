@@ -53549,9 +53549,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 283559915}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 298.4, y: 313}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -381, y: -74}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1137740622
@@ -55748,7 +55748,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1179201697
 RectTransform:
   m_ObjectHideFlags: 0
@@ -73883,7 +73883,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 0b96cfde923514d4f94409c375d99959, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 0b96cfde923514d4f94409c375d99959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -100893,6 +100893,10 @@ PrefabInstance:
     - target: {fileID: 2867662192989416761, guid: d9de257dce1e26647948b5c405cdd8b0, type: 3}
       propertyPath: m_Name
       value: PowerUpContainerBlueFlame
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867662192989416761, guid: d9de257dce1e26647948b5c405cdd8b0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2867662192989450521, guid: d9de257dce1e26647948b5c405cdd8b0, type: 3}
       propertyPath: m_LocalPosition.x
