@@ -2,11 +2,18 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameObject projectilePrefab, particleFireGun, particleFireGun2, gun2, bloodParticle;
+    public GameObject projectilePrefab, particleFireGun, bloodParticle;
+
+    [Header("Objetos Gun2")]
     public GameObject UIGun2;
-    public Transform firePoint, firePointGun2;
-    public RevolverScriptUI revolverScriptUI;
+    public GameObject gun2;
+    public Transform firePointGun2;
+    public GameObject particleFireGun2;
     public RevolverScriptUIGun2 revolverScriptUIGun2;
+
+    [Header("Resto del Plkayer")]
+    public Transform firePoint;
+    public RevolverScriptUI revolverScriptUI;
     GameManagerScript gameManagerScript;
 
     public float moveSpeed = 5f;
